@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from './Toast'
 import { TrendChart } from './TrendChart'
-import { Users, Key, Server, Box, Ticket, Zap, Crown, Loader2, RefreshCw, Activity, BarChart3, Clock, Database, Timer, ChevronDown, Hash, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react'
+import { Users, UserPlus, Key, Server, Box, Ticket, Zap, Crown, Loader2, RefreshCw, Activity, BarChart3, Clock, Database, Timer, ChevronDown, Hash, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card'
 import { Button } from './ui/button'
 import { cn } from '../lib/utils'
@@ -11,6 +11,7 @@ type RefreshInterval = 0 | 30 | 60 | 120 | 300 // 秒，0表示关闭
 
 interface SystemOverview {
   total_users: number
+  new_users: number
   active_users: number
   total_tokens: number
   active_tokens: number
@@ -638,13 +639,20 @@ export function Dashboard() {
           <Database className="w-5 h-5 text-primary" />
           平台资源
         </h3>
-        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
           <StatCard
             title="用户总数"
             value={overview?.total_users || 0}
             subValue={`${overview?.active_users || 0} 活跃(${getPeriodLabel()})`}
             icon={Users}
             color="blue"
+          />
+          <StatCard
+            title="新增用户"
+            value={overview?.new_users || 0}
+            subValue={`周期内新注册(${getPeriodLabel()})`}
+            icon={UserPlus}
+            color="cyan"
           />
           <StatCard
             title="令牌总数"

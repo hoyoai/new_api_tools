@@ -81,6 +81,17 @@ func (s *DashboardService) GetSystemOverview(period string, noCache bool) (map[s
 		result["active_tokens"] = row["active_tokens"]
 	}
 
+	// new_users: period 内新注册（依赖 users.created_at；旧 schema 无该列则返回 0）
+	result["new_users"] = int64(0)
+	if s.db.ColumnExists("users", "created_at") {
+		newUserQuery := s.db.RebindQuery(`
+			SELECT COUNT(*) as new_users FROM users
+			WHERE deleted_at IS NULL AND created_at >= ? AND created_at > 0`)
+		if newRow, nErr := s.db.QueryOneWithTimeout(15*time.Second, newUserQuery, startTime); nErr == nil && newRow != nil {
+			result["new_users"] = newRow["new_users"]
+		}
+	}
+
 	// active_users lives in the logs table → query the log DB separately
 	// (logs may be on a different database via LOG_SQL_DSN, so it can't be a
 	// subquery alongside the users/tokens counts above).
